@@ -896,7 +896,7 @@ function handTarget(h, i, cham){
     ry: i===0 ? Math.PI/2 : -Math.PI/2, rz: (i===0 ? -1 : 1)*Math.PI/2*.88, tilt: sx * -h._droop * .35,
   };
   const atk = attacker === (i===0 ? 'you' : 'foe');
-  if (i===0) return {x:.6, y:(atk ? 0 : -.8) + h._pump + Math.sin(time*2.1)*.02, z:1.5, ry:Math.PI + h._yaw, rz:-Math.PI/2, tilt:0};
+  if (i===0) return {x:.7, y:(atk ? -.05 : -.85) + h._pump + Math.sin(time*2.1)*.02, z:.9, ry:Math.PI + h._yaw, rz:-Math.PI/2, tilt:0};
   return {x:-.75, y:(atk ? .35 : -.55) + h._pump + Math.sin(time*2.1+1)*.02, z:-.85, ry:h._yaw, rz:Math.PI/2, tilt:0};
 }
 function update(dt){
@@ -917,7 +917,7 @@ function update(dt){
     const p = Math.min(1, phaseT/chooseDur);
     $('timerFill').style.transform = `scaleX(${1-p})`;
     if (p > .65) $('timer').classList.add('late');
-    if (cham){ cz = lerp(5.4, 4.5, p); cy = lerp(1.1, .95, p); cx = Math.sin(time*.4)*.15; tgtFov = lerp(50, 42, p); }
+    if (cham){ cz = lerp(5.7, 5.0, p); cy = lerp(1.4, 1.25, p); cx = Math.sin(time*.4)*.15; tgtFov = lerp(50, 42, p); }
     else { cz = lerp(7.2, 5.2, p); cy = lerp(1.6, 1.1, p); cx = Math.sin(time*.4)*.5; tgtFov = lerp(45, 36, p); }
     hbTimer -= dt;
     if (hbTimer <= 0){ hbTimer = lerp(.9, .28, p) * (matchPoint() ? .8 : 1); heartbeat(p > .6); pulseAmt = matchPoint() ? .85 : .35 + p*.4; fovKick = 1.4; }
@@ -935,7 +935,7 @@ function update(dt){
     if (p >= 1) pick(mode==='cham' ? (Math.random()<.5 ? 'L' : 'R') : MOVES[Math.floor(Math.random()*3)], true);
   }
   else if (phase === 'wait'){
-    if (cham){ cz = 4.6; cy = .95; tgtFov = 42; } else { cz = 5.4; cy = 1.15; tgtFov = 37; }
+    if (cham){ cz = 5.0; cy = 1.25; tgtFov = 42; } else { cz = 5.4; cy = 1.15; tgtFov = 37; }
     hbTimer -= dt; if (hbTimer <= 0){ hbTimer = .6; heartbeat(false); pulseAmt = .3; }
   }
   else if (phase === 'chant'){
@@ -943,7 +943,7 @@ function update(dt){
     const fr = (phaseT % beatLen)/beatLen;
     const pump = chantBeat < 3 ? Math.sin(Math.PI*fr)*(cham ? .3 : .6) : 0;
     if (cham){ (attacker==='you' ? you : foe).pump = pump; } else you.pump = foe.pump = pump;
-    if (cham){ cz = 4.5 - chantBeat*.15; cy = .95; tgtFov = 42 - chantBeat; }
+    if (cham){ cz = 5.0 - chantBeat*.2; cy = 1.25; tgtFov = 42 - chantBeat; }
     else { cz = 5.2 - chantBeat*.35; cy = 1.1; tgtFov = 38 - chantBeat; }
     camRate = 6;
     drone(.18, 1400);
@@ -962,7 +962,7 @@ function update(dt){
   else if (phase === 'result'){
     if (cham){
       if (phaseT < .8 && camTurn){ cx = camTurn*.4; cy = .85; cz = 3.4; tgtLook.set(camTurn*5, .7, -.2); tgtFov = 50; camRate = 6; }
-      else { cy = 1.05; cz = 5.2; tgtFov = 46; camRate = 3; }
+      else { cy = 1.35; cz = 5.6; tgtFov = 46; camRate = 3; }
       if (phaseT > 1) headYawT = 0;
     } else { cx = outcome==='win' ? -.8 : outcome==='lose' ? .8 : 0; cy = 1.3; cz = 5.6; tgtFov = 40; camRate = 2.5; }
     const hold = kind==='tie' ? 1.3 : kind==='attack' ? 1.4 : 2.1;
@@ -1030,7 +1030,8 @@ function update(dt){
   }
 
   // camera
-  tgtPos.set(cx, cy, cz).sub(tgtLook).multiplyScalar(cham ? Math.min(1.6, m) : m).add(tgtLook);
+  tgtPos.set(cx, cy, cz).sub(tgtLook).multiplyScalar(cham ? 1 : m).add(tgtLook);
+  if (cham) tgtFov = Math.min(75, tgtFov * Math.min(1.6, m));
   const k = 1 - Math.exp(-camDt*camRate);
   camPos.lerp(tgtPos, k); camLook.lerp(tgtLook, k);
   fovKick *= Math.exp(-dt*8); shake *= Math.exp(-dt*6);
