@@ -90,6 +90,17 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
 .rules p{font-size:13px;opacity:.72;max-width:none}
 .rules b{color:var(--gold);font-weight:600}
 .hint{font-size:12px;color:var(--muted)}
+.ghost{font:600 13px var(--body);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 18px;cursor:pointer}
+.ghost:hover{color:var(--ink)}
+.codebox{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:14px;border:1px dashed var(--gold);border-radius:14px;background:var(--panel)}
+.codebox span{font-size:11px;letter-spacing:.2em;color:var(--muted)}
+.codebox b{font-family:var(--display);font-weight:400;font-size:44px;letter-spacing:.25em;color:var(--gold);padding-left:.25em}
+.codebox code{font-size:12px;color:var(--muted);word-break:break-all;user-select:text;-webkit-user-select:text}
+.join{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap}
+.join input{width:9ch;min-width:0;font-family:var(--display);font-size:24px;letter-spacing:.2em;text-transform:uppercase;text-align:center;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.join input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.status{font-weight:600}
+.status.ok{color:var(--you)} .status.bad{color:var(--foe)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;width:100%;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .stats div{background:var(--panel);padding:10px 8px;display:flex;flex-direction:column;gap:2px}
 .stats span{font-size:11px;color:var(--muted);letter-spacing:.08em}
@@ -116,7 +127,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
   </div>
   <div class="side foe">
     <div class="tag">RIVAL</div>
-    <div class="name">검은 장갑</div>
+    <div class="name" id="foeName">검은 장갑</div>
     <div class="pips" id="pipsFoe"><i class="pip"></i><i class="pip"></i><i class="pip"></i></div>
   </div>
 </div>
@@ -147,11 +158,38 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
       <button class="cta alt" id="startMjp" type="button">묵찌빠</button>
       <button class="cta alt2" id="startCham" type="button">참참참</button>
     </div>
+    <button class="cta alt2" id="goOnline" type="button">친구와 온라인 대전</button>
     <div class="rules">
       <p><b>묵찌빠</b> 가위바위보로 이긴 쪽이 공격. 공격할 때 상대와 같은 손이면 1점.</p>
       <p><b>참참참</b> 공격은 손가락으로 왼쪽·오른쪽을 가리키고, 수비는 고개를 돌려요. 같은 쪽이면 공격 1점. 매 판 공격과 수비가 바뀌어요.</p>
     </div>
     <div class="hint">키보드로도 할 수 있어요 · 소리를 켜면 더 긴장돼요</div>
+  </div>
+</div>
+
+<div class="screen" id="online" hidden>
+  <div class="card">
+    <div class="eyebrow">온라인 대전 · 1대1</div>
+    <h1><span class="a">친구와</span> <span class="b">결전</span></h1>
+    <p class="status" id="onStatus">방을 만들거나, 친구에게 받은 코드로 참가하세요.</p>
+    <div id="onSetup" class="card" style="gap:14px">
+      <button class="cta" id="mkRoom" type="button">방 만들기</button>
+      <div class="join">
+        <input id="joinCode" maxlength="4" placeholder="코드" autocomplete="off" aria-label="방 코드">
+        <button class="cta alt2" id="joinBtn" type="button">참가</button>
+      </div>
+    </div>
+    <div class="codebox" id="codeBox" hidden>
+      <span>방 코드</span><b id="roomCode">----</b>
+      <code id="roomLink"></code>
+      <button class="ghost" id="copyLink" type="button">초대 링크 복사</button>
+    </div>
+    <div class="modes" id="onModes" hidden>
+      <button class="cta" type="button" data-mode="rps">가위바위보</button>
+      <button class="cta alt" type="button" data-mode="mjp">묵찌빠</button>
+      <button class="cta alt2" type="button" data-mode="cham">참참참</button>
+    </div>
+    <button class="ghost" id="onBack" type="button">나가기</button>
   </div>
 </div>
 
@@ -174,6 +212,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 (() => {
 const $ = id => document.getElementById(id);
@@ -185,6 +224,12 @@ const BEATS = {rock:'scissors', paper:'rock', scissors:'paper'};
 const COUNTER = {rock:'paper', paper:'scissors', scissors:'rock'};
 const WHY = {rock:'바위가 가위를 부순다', scissors:'가위가 보를 자른다', paper:'보가 바위를 감싼다'};
 let mode = 'rps', attacker = null, kind = 'point';
+let online = false, isHost = false, conn = null, peer = null, seq = 0, mid = 0, oppPicks = {}, againMe = false, againFriend = false;
+const N = {name:'검은 장갑', i:'검은 장갑이', eun:'검은 장갑은', eul:'검은 장갑을'};
+function setRival(isFriend){
+  Object.assign(N, isFriend ? {name:'친구', i:'친구가', eun:'친구는', eul:'친구를'} : {name:'검은 장갑', i:'검은 장갑이', eun:'검은 장갑은', eul:'검은 장갑을'});
+  $('foeName').textContent = N.name;
+}
 const nm = m => mode==='mjp' ? MJ[m] : (DIRKO[m] || KO[m]);
 
 /* ---------------- Audio ---------------- */
@@ -505,7 +550,7 @@ function renderRound(){
   const r = $('round'), l = $('roundLabel');
   r.classList.remove('atk','hot');
   if (mode!=='rps' && attacker){
-    l.textContent = attacker==='you' ? '당신의 공격' : '검은 장갑의 공격';
+    l.textContent = attacker==='you' ? '당신의 공격' : N.name + '의 공격';
     r.classList.add(attacker==='foe' ? 'hot' : 'atk');
   }
   else if (score.you===2 && score.foe===2){ l.textContent = '데스매치'; r.classList.add('hot'); }
@@ -542,11 +587,12 @@ function setMode(m){
   $('rpsChoices').hidden = mode==='cham';
   $('chamChoices').hidden = mode!=='cham';
 }
-function startMatch(m){
+function startMatch(m, firstFoe){
   if (m) setMode(m);
   score = {you:0, foe:0}; round = 1; history = []; chamHist = []; reads = 0; ties = 0;
-  attacker = mode==='cham' ? 'you' : null;
-  renderPips(); $('title').hidden = true; $('end').hidden = true;
+  seq = 0; oppPicks = {}; againMe = againFriend = false;
+  attacker = mode==='cham' ? (firstFoe ? 'foe' : 'you') : null;
+  renderPips(); $('title').hidden = true; $('end').hidden = true; $('online').hidden = true;
   beginChoose();
 }
 function beginChoose(){
@@ -554,7 +600,8 @@ function beginChoose(){
   chooseDur = matchPoint() ? 2.6 : (round > 3 ? 3.1 : 3.6);
   if (mode==='mjp' && attacker) chooseDur = matchPoint() ? 1.9 : 2.3;
   if (mode==='cham') chooseDur = matchPoint() ? 2.0 : 2.5;
-  aiMove = aiPick(); if (aiRead) reads++;
+  seq++;
+  if (online){ aiMove = null; aiRead = false; } else { aiMove = aiPick(); if (aiRead) reads++; }
   you.push = foe.push = 0; you.droop = foe.droop = 0; you.yaw = foe.yaw = 0; headYawT = 0; camTurn = 0;
   if (mode==='cham'){
     you.target = attacker==='you' ? 'point' : 'rock';
@@ -574,7 +621,7 @@ function beginChoose(){
   else if (ties > 0) s = `무승부 ×${ties} · 다시`;
   if (mode==='mjp' && attacker==='you'){ s = '같은 손을 내면 잡는다!' + (aiRead ? ' · 상대가 읽고 있다' : ''); sc = 'var(--you)'; }
   if (mode==='mjp' && attacker==='foe'){ s = '같은 손이면 잡힌다. 피해라!' + (aiRead ? ' · 읽히고 있다' : ''); sc = 'var(--foe)'; }
-  if (mode==='cham' && attacker==='you'){ s = '검은 장갑이 고개를 돌릴 쪽을 가리켜라' + (aiRead ? ' · 상대가 읽고 있다' : ''); sc = 'var(--you)'; }
+  if (mode==='cham' && attacker==='you'){ s = N.i + ' 고개를 돌릴 쪽을 가리켜라' + (aiRead ? ' · 상대가 읽고 있다' : ''); sc = 'var(--you)'; }
   if (mode==='cham' && attacker==='foe'){ s = '손가락과 다른 쪽으로 고개를 돌려라!' + (aiRead ? ' · 읽히고 있다' : ''); sc = 'var(--foe)'; }
   say('', null, s, sc);
   hbTimer = 0; feintT = .6 + Math.random()*.6; feintBack = 0;
@@ -587,10 +634,23 @@ function pick(move, auto){
   document.querySelectorAll('.choice').forEach(b => { b.disabled = true; b.classList.toggle('picked', b.dataset.move===move); });
   setTimeout(() => dock.classList.add('off'), 180);
   if (mode==='cham'){ foe.yaw = 0; headYawT = 0; } else foe.target = 'rock';
+  if (online){
+    send({t:'pick', mid, seq, move});
+    if (oppPicks[seq] === undefined){ phase = 'wait'; say('', null, timedOut ? '시간 초과! 멋대로 나갔다 · 친구를 기다리는 중…' : '친구를 기다리는 중…', 'var(--muted)'); return; }
+    aiMove = oppPicks[seq];
+  }
+  beginChant();
+}
+function beginChant(){
   phase = 'chant'; phaseT = 0; chantBeat = 0; beatLen = matchPoint() ? .36 : .42;
   if (mode==='mjp' && attacker) beatLen = matchPoint() ? .27 : .31;
   if (mode==='cham') beatLen = matchPoint() ? .32 : .38;
   say('', null, timedOut ? '시간 초과! 멋대로 나간다' : '', timedOut ? 'var(--foe)' : null);
+}
+function onOppPick(msg){
+  if (msg.mid !== mid) return;
+  oppPicks[msg.seq] = msg.move;
+  if (phase==='wait' && msg.seq===seq){ aiMove = msg.move; beginChant(); }
 }
 function onBeat(n){
   let words = ['가위!','바위!','보!'];
@@ -645,9 +705,9 @@ function showResult(){
   if (mode==='cham'){
     if (kind==='point'){
       const w = outcome==='win' ? 'you' : 'foe'; score[w]++; renderPips(w);
-      if (w==='you'){ winSound(); say('잡았다!', 'var(--you)', `검은 장갑이 ${DIRKO[aiMove]}을 봤다 · 1점`, 'var(--ink)'); }
+      if (w==='you'){ winSound(); say('잡았다!', 'var(--you)', `${N.i} ${DIRKO[aiMove]}을 봤다 · 1점`, 'var(--ink)'); }
       else { loseSound(); say('걸렸다', 'var(--foe)', `손가락을 따라 ${DIRKO[playerMove]}을 봤다` + (aiRead ? ' · 읽혔다' : ''), 'var(--ink)'); }
-    } else if (attacker==='you'){ chord([311,233], 'sawtooth', .4, .08, .06); say('빗나감', 'var(--muted)', `검은 장갑은 ${DIRKO[aiMove]}을 봤다 · 공수 교대`, 'var(--ink)'); }
+    } else if (attacker==='you'){ chord([311,233], 'sawtooth', .4, .08, .06); say('빗나감', 'var(--muted)', `${N.eun} ${DIRKO[aiMove]}을 봤다 · 공수 교대`, 'var(--ink)'); }
     else { chord([523,784], 'triangle', .35, .12, .06); say('피했다!', 'var(--you)', `손가락은 ${DIRKO[aiMove]} · 이제 당신이 공격`, 'var(--ink)'); }
     attacker = attacker==='you' ? 'foe' : 'you';
     renderRound(); drone(.03, 200); return;
@@ -680,7 +740,7 @@ function endMatch(){
   phase = 'end'; phaseT = 0;
   const won = score.you > score.foe;
   say('', null, '');
-  $('endEyebrow').textContent = won ? '검은 장갑을 꺾었다' : '검은 장갑의 승리';
+  $('endEyebrow').textContent = won ? N.eul + ' 꺾었다' : N.name + '의 승리';
   const t = $('endTitle'); t.textContent = won ? '최종 승리' : '패배'; t.style.color = won ? 'var(--you)' : 'var(--foe)';
   $('endScore').textContent = `${score.you} : ${score.foe}`;
   $('endRounds').textContent = round;
@@ -689,8 +749,8 @@ function endMatch(){
   const fav = keys.slice().sort((a,b) => c[b]-c[a])[0];
   $('endFavLabel').textContent = mode==='cham' ? '가장 많이 고른 쪽' : '가장 많이 낸 손';
   $('endFav').textContent = `${nm(fav)} ${c[fav]}회`;
-  $('endReads').textContent = `${reads}회`;
-  $('endLine').textContent = won ? '심장이 아직 뛰고 있다면, 한 번 더.' : `${nm(fav)}를 너무 많이 골랐어요. 상대는 그걸 보고 있었습니다.`;
+  $('endReads').textContent = online ? '-' : `${reads}회`;
+  $('endLine').textContent = online ? (won ? '친구에게 한 번 더 하자고 해 보세요.' : '복수전을 신청하세요.') : won ? '심장이 아직 뛰고 있다면, 한 번 더.' : `${nm(fav)}를 너무 많이 골랐어요. 상대는 그걸 보고 있었습니다.`;
   $('end').hidden = false;
   if (won){ victorySound(); burst(0xf3c969, 0, 1.5, 0, 8); } else loseSound();
   drone(.04, 180);
@@ -698,6 +758,7 @@ function endMatch(){
 
 document.querySelectorAll('.choice').forEach(b => b.addEventListener('click', () => pick(b.dataset.move)));
 window.addEventListener('keydown', e => {
+  if (e.target && e.target.tagName === 'INPUT') return;
   if (mode==='cham'){
     if (e.key==='ArrowLeft' || e.key==='1') pick('L');
     if (e.key==='ArrowRight' || e.key==='2') pick('R');
@@ -708,11 +769,122 @@ window.addEventListener('keydown', e => {
 $('startRps').addEventListener('click', () => { initAudio(); startMatch('rps'); });
 $('startMjp').addEventListener('click', () => { initAudio(); startMatch('mjp'); });
 $('startCham').addEventListener('click', () => { initAudio(); startMatch('cham'); });
-$('againBtn').addEventListener('click', () => { initAudio(); startMatch(); });
+$('againBtn').addEventListener('click', () => {
+  initAudio();
+  if (!online){ startMatch(); return; }
+  if (!conn || !conn.open){ $('end').hidden = true; showOnline(); setStatus('친구와 연결이 끊겼어요.', 'bad'); return; }
+  againMe = true; send({t:'again'});
+  $('endLine').textContent = againFriend ? '곧 시작해요!' : '친구가 다시 결전을 누르길 기다리는 중…';
+  tryRematch();
+});
 $('homeBtn').addEventListener('click', () => {
+  if (online){ $('end').hidden = true; showOnline(); return; }
   $('end').hidden = true; $('title').hidden = false; phase = 'title'; attacker = null;
   score = {you:0, foe:0}; renderPips(); $('roundLabel').textContent = '대기 중'; $('round').classList.remove('hot','atk');
 });
+
+/* ---------------- Online ---------------- */
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const peerId = code => 'rspduel-v1-' + code;
+const pageUrl = () => location.href.split('?')[0].split('#')[0];
+function setStatus(text, cls){ const el = $('onStatus'); el.textContent = text; el.className = 'status' + (cls ? ' ' + cls : ''); }
+function send(msg){ if (conn && conn.open) conn.send(msg); }
+function showOnline(){
+  $('title').hidden = true; $('end').hidden = true; $('online').hidden = false;
+  dock.classList.add('off'); say('', null, ''); phase = 'title';
+  const linked = conn && conn.open;
+  $('onSetup').hidden = !!linked || !!peer;
+  $('onModes').hidden = !(linked && isHost);
+  if (linked) setStatus(isHost ? '친구와 연결됐어요! 모드를 골라 시작하세요.' : '친구와 연결됐어요! 친구가 모드를 고르는 중…', 'ok');
+}
+function leaveOnline(){
+  const c = conn; conn = null;
+  try { if (c) c.close(); } catch(e){}
+  try { if (peer) peer.destroy(); } catch(e){}
+  peer = null; online = false; isHost = false;
+  setRival(false);
+  $('online').hidden = true; $('codeBox').hidden = true; $('onModes').hidden = true; $('onSetup').hidden = false;
+  setStatus('방을 만들거나, 친구에게 받은 코드로 참가하세요.');
+  $('title').hidden = false; phase = 'title'; attacker = null; score = {you:0, foe:0}; renderPips();
+  $('roundLabel').textContent = '대기 중'; $('round').classList.remove('hot','atk'); dock.classList.add('off'); say('', null, '');
+}
+function peerError(e){
+  const t = e && e.type;
+  if (t === 'unavailable-id' && isHost){ makeRoom(); return; }
+  if (t === 'peer-unavailable') setStatus('그 코드의 방을 찾을 수 없어요. 코드를 다시 확인하세요.', 'bad');
+  else if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'browser-incompatible')
+    setStatus('연결 서버에 닿지 못했어요. 온라인 대전은 https://leewonyoungethan.github.io/RSP/ 에서 열어 주세요.', 'bad');
+  else setStatus('연결 중 문제가 생겼어요. 다시 시도해 주세요.', 'bad');
+  try { if (peer) peer.destroy(); } catch(_){}
+  peer = null; $('onSetup').hidden = false; $('codeBox').hidden = true;
+}
+function wire(c){
+  conn = c;
+  c.on('open', () => { online = true; setRival(true); send({t:'hello'}); showOnline(); });
+  c.on('data', msg => {
+    if (!msg || typeof msg !== 'object') return;
+    if (msg.t === 'start'){ mid = msg.mid; online = true; initAudio(); startMatch(msg.mode, msg.mode === 'cham'); }
+    if (msg.t === 'pick') onOppPick(msg);
+    if (msg.t === 'again'){
+      againFriend = true;
+      if (!$('end').hidden) $('endLine').textContent = againMe ? '곧 시작해요!' : '친구가 한 판 더 하자고 해요!';
+      tryRematch();
+    }
+  });
+  c.on('close', () => {
+    if (conn !== c) return;
+    conn = null;
+    try { if (peer) peer.destroy(); } catch(e){}
+    peer = null;
+    showOnline(); $('onModes').hidden = true; $('codeBox').hidden = true; $('onSetup').hidden = false;
+    setStatus('친구와 연결이 끊겼어요. 방을 다시 만들거나 참가하세요.', 'bad');
+  });
+}
+function hostStart(m){
+  if (!conn || !conn.open) return;
+  initAudio(); mid = Date.now() % 1e9; send({t:'start', mode:m, mid}); startMatch(m, false);
+}
+function tryRematch(){ if (againMe && againFriend && isHost) hostStart(mode); }
+function makeRoom(){
+  if (typeof Peer === 'undefined'){ setStatus('온라인 기능을 불러오지 못했어요. 인터넷 연결을 확인하세요.', 'bad'); return; }
+  try { if (peer) peer.destroy(); } catch(e){}
+  let code = ''; for (let i=0;i<4;i++) code += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];
+  isHost = true; setStatus('방을 만드는 중…'); $('onSetup').hidden = true;
+  peer = new Peer(peerId(code));
+  peer.on('open', () => {
+    $('roomCode').textContent = code; $('roomLink').textContent = pageUrl() + '?room=' + code; $('codeBox').hidden = false;
+    setStatus('친구에게 코드나 링크를 보내 주세요. 친구가 들어오면 시작할 수 있어요.');
+  });
+  peer.on('connection', c => {
+    if (conn && conn.open){ c.on('open', () => c.close()); return; }
+    $('codeBox').hidden = true; wire(c);
+  });
+  peer.on('error', peerError);
+}
+function joinRoom(code){
+  code = (code || '').trim().toUpperCase();
+  if (code.length !== 4){ setStatus('코드 4자리를 입력하세요.', 'bad'); return; }
+  if (typeof Peer === 'undefined'){ setStatus('온라인 기능을 불러오지 못했어요. 인터넷 연결을 확인하세요.', 'bad'); return; }
+  try { if (peer) peer.destroy(); } catch(e){}
+  isHost = false; setStatus(`${code} 방에 들어가는 중…`); $('onSetup').hidden = true;
+  peer = new Peer();
+  peer.on('open', () => wire(peer.connect(peerId(code), {reliable:true})));
+  peer.on('error', peerError);
+}
+$('goOnline').addEventListener('click', () => { initAudio(); showOnline(); });
+$('mkRoom').addEventListener('click', makeRoom);
+$('joinBtn').addEventListener('click', () => joinRoom($('joinCode').value));
+$('joinCode').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom($('joinCode').value); });
+$('onBack').addEventListener('click', leaveOnline);
+$('copyLink').addEventListener('click', () => {
+  const text = $('roomLink').textContent;
+  const done = () => { $('copyLink').textContent = '복사했어요'; setTimeout(() => { $('copyLink').textContent = '초대 링크 복사'; }, 1500); };
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents($('roomLink')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); };
+  try { navigator.clipboard.writeText(text).then(done, fallback); } catch(e){ fallback(); }
+});
+document.querySelectorAll('#onModes [data-mode]').forEach(b => b.addEventListener('click', () => hostStart(b.dataset.mode)));
+const roomParam = (new URLSearchParams(location.search).get('room') || '').toUpperCase();
+if (roomParam){ showOnline(); $('joinCode').value = roomParam; joinRoom(roomParam); }
 
 /* ---------------- Loop ---------------- */
 const lerp = (a,b,t) => a+(b-a)*t;
@@ -751,7 +923,7 @@ function update(dt){
     if (hbTimer <= 0){ hbTimer = lerp(.9, .28, p) * (matchPoint() ? .8 : 1); heartbeat(p > .6); pulseAmt = matchPoint() ? .85 : .35 + p*.4; fovKick = 1.4; }
     if (p > .7 && Math.random() < dt*6) tick();
     feintT -= dt;
-    if (feintT <= 0){
+    if (feintT <= 0 && !online){
       if (!cham){ foe.target = Math.random()<.5 ? 'paper' : 'scissors'; }
       else if (attacker==='foe') foe.yaw = Math.random()<.5 ? -.28 : .28;
       else headYawT = Math.random()<.5 ? -.3 : .3;
@@ -761,6 +933,10 @@ function update(dt){
     poseSpeed = 22;
     drone(.04 + p*.16, 200 + p*900);
     if (p >= 1) pick(mode==='cham' ? (Math.random()<.5 ? 'L' : 'R') : MOVES[Math.floor(Math.random()*3)], true);
+  }
+  else if (phase === 'wait'){
+    if (cham){ cz = 4.6; cy = .95; tgtFov = 42; } else { cz = 5.4; cy = 1.15; tgtFov = 37; }
+    hbTimer -= dt; if (hbTimer <= 0){ hbTimer = .6; heartbeat(false); pulseAmt = .3; }
   }
   else if (phase === 'chant'){
     while (chantBeat < 3 && phaseT >= beatLen*(chantBeat+1)){ chantBeat++; onBeat(chantBeat); }
@@ -874,7 +1050,7 @@ requestAnimationFrame(frame);
 
 /* keep the match across live page updates */
 const hot = window.claude && window.claude.hot;
-if (hot && hot.snapshot) hot.snapshot(() => ({score, round, history, chamHist, reads, mode, attacker, inMatch: phase!=='title' && phase!=='end'}));
+if (hot && hot.snapshot) hot.snapshot(() => ({score, round, history, chamHist, reads, mode, attacker, inMatch: !online && phase!=='title' && phase!=='end'}));
 const boot = data => {
   if (data && data.inMatch && data.score){
     setMode(data.mode || 'rps'); attacker = data.attacker || (data.mode==='cham' ? 'you' : null);
