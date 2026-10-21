@@ -4,6 +4,8 @@
 
 **바로 하기:** https://leewonyoungethan.github.io/RSP/
 
+**English:** https://leewonyoungethan.github.io/RSP/en.html
+
 - 3선승제, 제한 시간, 심장 소리, 슬로모션 공개
 - 컴퓨터 상대 '검은 장갑'은 내가 자주 내는 손을 읽어요
 - **친구와 온라인 대전**: 방을 만들고 4자리 코드나 초대 링크를 친구에게 보내면 1대1로 겨룰 수 있어요 (PeerJS 사용)
