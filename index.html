@@ -51,8 +51,13 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
 .round.hot b{color:var(--foe);animation:throb .9s ease-in-out infinite}
 .round.atk b{color:var(--you)}
 @keyframes throb{50%{opacity:.55}}
-#mute{pointer-events:auto;font:600 12px var(--body);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
-#mute:hover{color:var(--ink)}
+.tools{display:flex;gap:6px;pointer-events:auto}
+#mute,#langBtn{pointer-events:auto;font:600 12px var(--body);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+#mute:hover,#langBtn:hover{color:var(--ink)}
+#langBtn:focus-visible,.langs button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.langs{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.langs button{font:600 13px var(--body);color:var(--muted);background:transparent;border:0;border-radius:999px;padding:6px 16px;cursor:pointer}
+.langs button.on{background:var(--ink);color:var(--bg)}
 #mute:focus-visible,.choice:focus-visible,.cta:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
 #callout{position:fixed;left:0;right:0;top:36%;transform:translateY(-50%);text-align:center;font-family:var(--display);font-size:clamp(60px,15vw,160px);line-height:1;pointer-events:none;text-shadow:0 0 40px rgba(0,0,0,.85),0 5px 0 rgba(0,0,0,.55);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -120,12 +125,12 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
 <div class="hud">
   <div class="side you">
     <div class="tag">PLAYER</div>
-    <div class="name">당신</div>
+    <div class="name" data-i18n="name.you">당신</div>
     <div class="pips" id="pipsYou"><i class="pip"></i><i class="pip"></i><i class="pip"></i></div>
   </div>
   <div class="mid">
-    <div class="round" id="round">3선승제<b id="roundLabel">대기 중</b></div>
-    <button id="mute" type="button">소리 켜짐</button>
+    <div class="round" id="round"><span data-i18n="hud.first">3선승제</span><b id="roundLabel">대기 중</b></div>
+    <div class="tools"><button id="mute" type="button">소리 켜짐</button><button id="langBtn" type="button" title="Language / 언어">English</button></div>
   </div>
   <div class="side foe">
     <div class="tag">RIVAL</div>
@@ -145,54 +150,54 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
     <button class="choice" type="button" id="c-paper" data-move="paper"><span class="g">✋</span><span class="l">보</span><span class="k">3</span></button>
   </div>
   <div class="choices two" id="chamChoices" hidden>
-    <button class="choice" type="button" id="c-L" data-move="L"><span class="g">←</span><span class="l">왼쪽</span><span class="k">← 또는 1</span></button>
-    <button class="choice" type="button" id="c-R" data-move="R"><span class="g">→</span><span class="l">오른쪽</span><span class="k">→ 또는 2</span></button>
+    <button class="choice" type="button" id="c-L" data-move="L"><span class="g">←</span><span class="l">왼쪽</span><span class="k" data-i18n="key.L">← 또는 1</span></button>
+    <button class="choice" type="button" id="c-R" data-move="R"><span class="g">→</span><span class="l">오른쪽</span><span class="k" data-i18n="key.R">→ 또는 2</span></button>
   </div>
 </div>
 
 <div class="screen" id="title">
   <div class="card">
-    <div class="eyebrow">3선승제 · 제한 시간 있음</div>
-    <h1><span class="a">결전의</span><br><span class="b">가위바위보</span></h1>
-    <p>상대 '검은 장갑'은 당신의 습관을 읽습니다. 시간 안에 고르지 못하면 손이 멋대로 나가요. 먼저 3점을 따면 승리.</p>
+    <div class="eyebrow" data-i18n="title.eyebrow">3선승제 · 제한 시간 있음</div>
+    <h1><span class="a" data-i18n="title.h1a">결전의</span><br><span class="b" data-i18n="title.h1b">가위바위보</span></h1>
+    <p data-i18n="title.p">상대 '검은 장갑'은 당신의 습관을 읽습니다. 시간 안에 고르지 못하면 손이 멋대로 나가요. 먼저 3점을 따면 승리.</p>
     <div class="modes">
-      <button class="cta" id="startRps" type="button">가위바위보</button>
-      <button class="cta alt" id="startMjp" type="button">묵찌빠</button>
-      <button class="cta alt2" id="startCham" type="button">참참참</button>
+      <button class="cta" id="startRps" type="button" data-i18n="mode.rps">가위바위보</button>
+      <button class="cta alt" id="startMjp" type="button" data-i18n="mode.mjp">묵찌빠</button>
+      <button class="cta alt2" id="startCham" type="button" data-i18n="mode.cham">참참참</button>
     </div>
-    <button class="cta alt2" id="goOnline" type="button">친구와 온라인 대전</button>
+    <button class="cta alt2" id="goOnline" type="button" data-i18n="title.online">친구와 온라인 대전</button>
     <div class="rules">
-      <p><b>묵찌빠</b> 가위바위보로 이긴 쪽이 공격. 공격할 때 상대와 같은 손이면 1점.</p>
-      <p><b>참참참</b> 공격은 손가락으로 왼쪽·오른쪽을 가리키고, 수비는 고개를 돌려요. 같은 쪽이면 공격 1점. 매 판 공격과 수비가 바뀌어요.</p>
+      <p data-i18n-html="rule.mjp"><b>묵찌빠</b> 가위바위보로 이긴 쪽이 공격. 공격할 때 상대와 같은 손이면 1점.</p>
+      <p data-i18n-html="rule.cham"><b>참참참</b> 공격은 손가락으로 왼쪽·오른쪽을 가리키고, 수비는 고개를 돌려요. 같은 쪽이면 공격 1점. 매 판 공격과 수비가 바뀌어요.</p>
     </div>
-    <div class="hint">키보드로도 할 수 있어요 · 소리를 켜면 더 긴장돼요</div>
-    <a class="lang" href="en.html" lang="en">Play in English</a>
+    <div class="hint" data-i18n="title.hint">키보드로도 할 수 있어요 · 소리를 켜면 더 긴장돼요</div>
+    <div class="langs" role="group" aria-label="Language / 언어"><button type="button" data-lang="ko" lang="ko">한국어</button><button type="button" data-lang="en" lang="en">English</button></div>
   </div>
 </div>
 
 <div class="screen" id="online" hidden>
   <div class="card">
-    <div class="eyebrow">온라인 대전 · 1대1</div>
-    <h1><span class="a">친구와</span> <span class="b">결전</span></h1>
+    <div class="eyebrow" data-i18n="on.eyebrow">온라인 대전 · 1대1</div>
+    <h1><span class="a" data-i18n="on.h1a">친구와</span> <span class="b" data-i18n="on.h1b">결전</span></h1>
     <p class="status" id="onStatus">방을 만들거나, 친구에게 받은 코드로 참가하세요.</p>
     <div id="onSetup" class="card" style="gap:14px">
-      <button class="cta" id="mkRoom" type="button">방 만들기</button>
+      <button class="cta" id="mkRoom" type="button" data-i18n="on.mk">방 만들기</button>
       <div class="join">
         <input id="joinCode" maxlength="4" placeholder="코드" autocomplete="off" aria-label="방 코드">
-        <button class="cta alt2" id="joinBtn" type="button">참가</button>
+        <button class="cta alt2" id="joinBtn" type="button" data-i18n="on.join">참가</button>
       </div>
     </div>
     <div class="codebox" id="codeBox" hidden>
-      <span>방 코드</span><b id="roomCode">----</b>
+      <span data-i18n="on.roomCode">방 코드</span><b id="roomCode">----</b>
       <code id="roomLink"></code>
-      <button class="ghost" id="copyLink" type="button">초대 링크 복사</button>
+      <button class="ghost" id="copyLink" type="button" data-i18n="on.copy">초대 링크 복사</button>
     </div>
     <div class="modes" id="onModes" hidden>
-      <button class="cta" type="button" data-mode="rps">가위바위보</button>
-      <button class="cta alt" type="button" data-mode="mjp">묵찌빠</button>
-      <button class="cta alt2" type="button" data-mode="cham">참참참</button>
+      <button class="cta" type="button" data-mode="rps" data-i18n="mode.rps">가위바위보</button>
+      <button class="cta alt" type="button" data-mode="mjp" data-i18n="mode.mjp">묵찌빠</button>
+      <button class="cta alt2" type="button" data-mode="cham" data-i18n="mode.cham">참참참</button>
     </div>
-    <button class="ghost" id="onBack" type="button">나가기</button>
+    <button class="ghost" id="onBack" type="button" data-i18n="on.leave">나가기</button>
   </div>
 </div>
 
@@ -201,15 +206,15 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
     <div class="eyebrow" id="endEyebrow">최종 결과</div>
     <h1 id="endTitle">승리</h1>
     <div class="stats">
-      <div><span>최종 점수</span><b id="endScore">3 : 0</b></div>
-      <div><span>치른 라운드</span><b id="endRounds">3</b></div>
+      <div><span data-i18n="end.score">최종 점수</span><b id="endScore">3 : 0</b></div>
+      <div><span data-i18n="end.rounds">치른 라운드</span><b id="endRounds">3</b></div>
       <div><span id="endFavLabel">가장 많이 낸 손</span><b id="endFav">바위</b></div>
-      <div><span>읽힌 횟수</span><b id="endReads">0</b></div>
+      <div><span data-i18n="end.reads">읽힌 횟수</span><b id="endReads">0</b></div>
     </div>
     <p id="endLine"></p>
     <div class="modes">
-      <button class="cta" id="againBtn" type="button">다시 결전</button>
-      <button class="cta alt" id="homeBtn" type="button">모드 바꾸기</button>
+      <button class="cta" id="againBtn" type="button" data-i18n="end.again">다시 결전</button>
+      <button class="cta alt" id="homeBtn" type="button" data-i18n="end.home">모드 바꾸기</button>
     </div>
   </div>
 </div>
@@ -219,21 +224,131 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidd
 <script>
 (() => {
 const $ = id => document.getElementById(id);
+/* ---------------- Language ---------------- */
+const I18N = {
+  ko: {
+    'doc.title':'결전의 가위바위보', 'name.you':'당신', 'hud.first':'3선승제', 'hud.standby':'대기 중',
+    'mute.on':'소리 켜짐', 'mute.off':'소리 꺼짐', 'lang.other':'English',
+    'key.L':'← 또는 1', 'key.R':'→ 또는 2',
+    'title.eyebrow':'3선승제 · 제한 시간 있음', 'title.h1a':'결전의', 'title.h1b':'가위바위보',
+    'title.p':"상대 '검은 장갑'은 당신의 습관을 읽습니다. 시간 안에 고르지 못하면 손이 멋대로 나가요. 먼저 3점을 따면 승리.",
+    'mode.rps':'가위바위보', 'mode.mjp':'묵찌빠', 'mode.cham':'참참참', 'title.online':'친구와 온라인 대전',
+    'rule.mjp':'<b>묵찌빠</b> 가위바위보로 이긴 쪽이 공격. 공격할 때 상대와 같은 손이면 1점.',
+    'rule.cham':'<b>참참참</b> 공격은 손가락으로 왼쪽·오른쪽을 가리키고, 수비는 고개를 돌려요. 같은 쪽이면 공격 1점. 매 판 공격과 수비가 바뀌어요.',
+    'title.hint':'키보드로도 할 수 있어요 · 소리를 켜면 더 긴장돼요',
+    'on.eyebrow':'온라인 대전 · 1대1', 'on.h1a':'친구와', 'on.h1b':'결전', 'on.mk':'방 만들기', 'on.code':'코드', 'on.codeAria':'방 코드',
+    'on.join':'참가', 'on.roomCode':'방 코드', 'on.copy':'초대 링크 복사', 'on.copied':'복사했어요', 'on.leave':'나가기',
+    'end.eyebrow':'최종 결과', 'end.score':'최종 점수', 'end.rounds':'치른 라운드', 'end.reads':'읽힌 횟수', 'end.again':'다시 결전', 'end.home':'모드 바꾸기',
+    rival:'검은 장갑', friend:'친구',
+    hands:{rock:'바위', paper:'보', scissors:'가위'}, mj:{rock:'묵', paper:'빠', scissors:'찌'}, dirs:{L:'왼쪽', R:'오른쪽'},
+    why:{rock:'바위가 가위를 부순다', scissors:'가위가 보를 자른다', paper:'보가 바위를 감싼다'},
+    atkYou:'당신의 공격', atkFoe: fr => fr ? '친구의 공격' : '검은 장갑의 공격',
+    sudden:'데스매치', mpYou:'당신의 매치 포인트', mpFoe:'벼랑 끝', round: n => `제 ${n} 라운드`,
+    chamBtn: (atk, d) => (d==='L' ? '왼쪽 ' : '오른쪽 ') + (atk ? '가리키기' : '보기'),
+    sPick:'손을 골라라', sRead:'검은 장갑이 당신의 습관을 읽고 있다…', sFinal:'이번 한 판으로 모든 게 끝난다', sEdge:'지면 끝이다', sOneMore:'한 번만 더 이기면 끝',
+    sDraws: n => `무승부 ×${n} · 다시`,
+    sMjpAtk: r => '같은 손을 내면 잡는다!' + (r ? ' · 상대가 읽고 있다' : ''),
+    sMjpDef: r => '같은 손이면 잡힌다. 피해라!' + (r ? ' · 읽히고 있다' : ''),
+    sChamAtk: (fr, r) => (fr ? '친구가' : '검은 장갑이') + ' 고개를 돌릴 쪽을 가리켜라' + (r ? ' · 상대가 읽고 있다' : ''),
+    sChamDef: r => '손가락과 다른 쪽으로 고개를 돌려라!' + (r ? ' · 읽히고 있다' : ''),
+    wait: t => t ? '시간 초과! 멋대로 나갔다 · 친구를 기다리는 중…' : '친구를 기다리는 중…', timeout:'시간 초과! 멋대로 나간다',
+    wRps:['가위!','바위!','보!'], wMjp:['묵!','찌!','빠!'], wCham:['참!','참!','참!'],
+    impCaught:'걸렸다!', impWhoosh:'휙!', gotThem:'잡았다!', caught:'걸렸다', caughtMjp:'잡혔다', missed:'빗나감', dodged:'피했다!',
+    chamGotSub: (fr, d) => `${fr ? '친구가' : '검은 장갑이'} ${d}을 봤다 · 1점`,
+    chamCaughtSub: (d, r) => `손가락을 따라 ${d}을 봤다` + (r ? ' · 읽혔다' : ''),
+    chamMissSub: (fr, d) => `${fr ? '친구는' : '검은 장갑은'} ${d}을 봤다 · 공수 교대`,
+    chamDodgeSub: d => `손가락은 ${d} · 이제 당신이 공격`,
+    draw:'무승부', both: h => `둘 다 ${h}`, mjpGotSub: h => `둘 다 ${h} · 1점`,
+    stolen:'공격 뺏기!', attack:'공격권!', lostIt:'공격 뺏김!', defend:'수비!',
+    mjpAtkSub: (a, b) => `${a}(이)가 ${b}를 이겼다 · 이제 당신이 공격`,
+    mjpDefSub: (a, b) => `${a}(이)가 ${b}를 이겼다 · 같은 손을 피해라`,
+    readTag:' · 읽혔다', win:'승리', loss:'패배',
+    endWon: fr => `${fr ? '친구를' : '검은 장갑을'} 꺾었다`, endLost: fr => `${fr ? '친구' : '검은 장갑'}의 승리`,
+    finalWin:'최종 승리', defeat:'패배', favSide:'가장 많이 고른 쪽', favHand:'가장 많이 낸 손',
+    favCount: (h, n) => `${h} ${n}회`, reads: n => `${n}회`,
+    lineOnWin:'친구에게 한 번 더 하자고 해 보세요.', lineOnLose:'복수전을 신청하세요.', lineWin:'심장이 아직 뛰고 있다면, 한 번 더.',
+    lineLose: h => `${h}를 너무 많이 골랐어요. 상대는 그걸 보고 있었습니다.`,
+    stDefault:'방을 만들거나, 친구에게 받은 코드로 참가하세요.', stLost:'친구와 연결이 끊겼어요.',
+    stHost:'친구와 연결됐어요! 모드를 골라 시작하세요.', stGuest:'친구와 연결됐어요! 친구가 모드를 고르는 중…',
+    stNoRoom:'그 코드의 방을 찾을 수 없어요. 코드를 다시 확인하세요.',
+    stNoServer:'연결 서버에 닿지 못했어요. 온라인 대전은 https://leewonyoungethan.github.io/RSP/ 에서 열어 주세요.',
+    stError:'연결 중 문제가 생겼어요. 다시 시도해 주세요.', stDisc:'친구와 연결이 끊겼어요. 방을 다시 만들거나 참가하세요.',
+    stNoLib:'온라인 기능을 불러오지 못했어요. 인터넷 연결을 확인하세요.', stCreating:'방을 만드는 중…',
+    stShare:'친구에게 코드나 링크를 보내 주세요. 친구가 들어오면 시작할 수 있어요.', stCode4:'코드 4자리를 입력하세요.',
+    stJoining: c => `${c} 방에 들어가는 중…`,
+    againWait:'친구가 다시 결전을 누르길 기다리는 중…', againSoon:'곧 시작해요!', againFriend:'친구가 한 판 더 하자고 해요!',
+  },
+  en: {
+    'doc.title':'Rock Paper Showdown', 'name.you':'You', 'hud.first':'FIRST TO 3', 'hud.standby':'Standing by',
+    'mute.on':'Sound on', 'mute.off':'Sound off', 'lang.other':'한국어',
+    'key.L':'← or 1', 'key.R':'→ or 2',
+    'title.eyebrow':'FIRST TO 3 · ON THE CLOCK', 'title.h1a':'Rock Paper', 'title.h1b':'Showdown',
+    'title.p':'Your rival, Black Glove, studies your habits. Miss the timer and your hand throws on its own. First to 3 points wins.',
+    'mode.rps':'Rock Paper Scissors', 'mode.mjp':'Muk-jji-ppa', 'mode.cham':'Cham-cham-cham', 'title.online':'Play a friend online',
+    'rule.mjp':'<b>Muk-jji-ppa</b> Win a round of rock paper scissors to attack. While attacking, throw the same hand as your rival to score.',
+    'rule.cham':'<b>Cham-cham-cham</b> The attacker points left or right, the defender turns their head. Same side and the attacker scores. Roles swap every turn.',
+    'title.hint':'Keyboard works too · Sound makes it far more tense',
+    'on.eyebrow':'ONLINE · 1 VS 1', 'on.h1a':'Friend', 'on.h1b':'Duel', 'on.mk':'Create room', 'on.code':'CODE', 'on.codeAria':'Room code',
+    'on.join':'Join', 'on.roomCode':'ROOM CODE', 'on.copy':'Copy invite link', 'on.copied':'Copied', 'on.leave':'Leave',
+    'end.eyebrow':'FINAL RESULT', 'end.score':'FINAL SCORE', 'end.rounds':'ROUNDS', 'end.reads':'TIMES READ', 'end.again':'Rematch', 'end.home':'Change mode',
+    rival:'Black Glove', friend:'Friend',
+    hands:{rock:'Rock', paper:'Paper', scissors:'Scissors'}, mj:{rock:'Muk', paper:'Ppa', scissors:'Jji'}, dirs:{L:'left', R:'right'},
+    why:{rock:'Rock crushes scissors', scissors:'Scissors cut paper', paper:'Paper wraps rock'},
+    atkYou:'You attack', atkFoe: fr => fr ? 'Friend attacks' : 'Black Glove attacks',
+    sudden:'Sudden death', mpYou:'Match point', mpFoe:'On the edge', round: n => `Round ${n}`,
+    chamBtn: (atk, d) => (atk ? 'Point ' : 'Look ') + (d==='L' ? 'left' : 'right'),
+    sPick:'Pick your hand', sRead:'Black Glove is reading your habits…', sFinal:'This throw decides everything', sEdge:'Lose this and it is over', sOneMore:'One more win and it is yours',
+    sDraws: n => `Draw ×${n} · again`,
+    sMjpAtk: r => 'Match their hand to catch them!' + (r ? ' · they are reading you' : ''),
+    sMjpDef: r => 'Same hand and you are caught. Dodge it!' + (r ? ' · you are being read' : ''),
+    sChamAtk: (fr, r) => 'Point where ' + (fr ? 'your friend' : 'Black Glove') + ' will look' + (r ? ' · they are reading you' : ''),
+    sChamDef: r => 'Look away from the finger!' + (r ? ' · you are being read' : ''),
+    wait: t => t ? 'Time is up! Your hand moved on its own · waiting for your friend…' : 'Waiting for your friend…', timeout:'Time is up! Your hand moves on its own',
+    wRps:['Rock!','Paper!','Scissors!'], wMjp:['Muk!','Jji!','Ppa!'], wCham:['Cham!','Cham!','Cham!'],
+    impCaught:'Caught!', impWhoosh:'Whoosh!', gotThem:'Got them!', caught:'Caught', caughtMjp:'Caught', missed:'Missed', dodged:'Dodged!',
+    chamGotSub: (fr, d) => `${fr ? 'Your friend' : 'Black Glove'} looked ${d} · 1 point`,
+    chamCaughtSub: (d, r) => `You followed the finger ${d}` + (r ? ' · you were read' : ''),
+    chamMissSub: (fr, d) => `${fr ? 'Your friend' : 'Black Glove'} looked ${d} · roles swap`,
+    chamDodgeSub: d => `The finger went ${d} · your turn to attack`,
+    draw:'Draw', both: h => `Both threw ${h}`, mjpGotSub: h => `Both threw ${h} · 1 point`,
+    stolen:'Stolen!', attack:'Attack!', lostIt:'Lost it!', defend:'Defend!',
+    mjpAtkSub: (a, b) => `${a} beats ${b} · you attack now`,
+    mjpDefSub: (a, b) => `${a} beats ${b} · avoid their hand`,
+    readTag:' · you were read', win:'Win', loss:'Loss',
+    endWon: fr => `You beat ${fr ? 'your friend' : 'Black Glove'}`, endLost: fr => `${fr ? 'Your friend' : 'Black Glove'} wins`,
+    finalWin:'Victory', defeat:'Defeat', favSide:'FAVORITE SIDE', favHand:'FAVORITE HAND',
+    favCount: (h, n) => `${h} ×${n}`, reads: n => `${n}`,
+    lineOnWin:'Ask your friend for another round.', lineOnLose:'Challenge them to a rematch.', lineWin:'If your heart is still racing, go again.',
+    lineLose: h => `You picked ${h} too often. Black Glove was watching.`,
+    stDefault:'Create a room, or join with the code your friend sent you.', stLost:'Lost the connection to your friend.',
+    stHost:'Connected! Pick a mode to start.', stGuest:'Connected! Your friend is picking a mode…',
+    stNoRoom:'No room found with that code. Check the code and try again.',
+    stNoServer:'Could not reach the connection server. Open online play at https://leewonyoungethan.github.io/RSP/',
+    stError:'Something went wrong while connecting. Please try again.', stDisc:'Your friend disconnected. Create or join a room again.',
+    stNoLib:'Online play failed to load. Check your internet connection.', stCreating:'Creating room…',
+    stShare:'Send the code or link to your friend. You can start once they join.', stCode4:'Enter the 4-character code.',
+    stJoining: c => `Joining room ${c}…`,
+    againWait:'Waiting for your friend to press Rematch…', againSoon:'Starting soon!', againFriend:'Your friend wants a rematch!',
+  },
+};
+let lang = (() => {
+  const q = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+  if (q === 'en' || q === 'ko') return q;
+  try { const s = localStorage.getItem('rsp-lang'); if (s === 'en' || s === 'ko') return s; } catch(e){}
+  return (navigator.language || 'ko').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+})();
+function tr(k, ...a){ const v = I18N[lang][k]; return typeof v === 'function' ? v(...a) : v; }
+
 const MOVES = ['scissors','rock','paper'];
-const KO = {rock:'바위', paper:'보', scissors:'가위'};
-const MJ = {rock:'묵', paper:'빠', scissors:'찌'};
-const DIRKO = {L:'왼쪽', R:'오른쪽'};
 const BEATS = {rock:'scissors', paper:'rock', scissors:'paper'};
 const COUNTER = {rock:'paper', paper:'scissors', scissors:'rock'};
-const WHY = {rock:'바위가 가위를 부순다', scissors:'가위가 보를 자른다', paper:'보가 바위를 감싼다'};
 let mode = 'rps', attacker = null, kind = 'point';
 let online = false, isHost = false, conn = null, peer = null, seq = 0, mid = 0, oppPicks = {}, againMe = false, againFriend = false;
-const N = {name:'검은 장갑', i:'검은 장갑이', eun:'검은 장갑은', eul:'검은 장갑을'};
+const N = {friend:false};
 function setRival(isFriend){
-  Object.assign(N, isFriend ? {name:'친구', i:'친구가', eun:'친구는', eul:'친구를'} : {name:'검은 장갑', i:'검은 장갑이', eun:'검은 장갑은', eul:'검은 장갑을'});
-  $('foeName').textContent = N.name;
+  N.friend = isFriend; $('foeName').textContent = tr(isFriend ? 'friend' : 'rival');
 }
-const nm = m => mode==='mjp' ? MJ[m] : (DIRKO[m] || KO[m]);
+const nm = m => mode==='mjp' ? tr('mj')[m] : (tr('dirs')[m] || tr('hands')[m]);
 
 /* ---------------- Audio ---------------- */
 let AC = null, master, droneGain, droneFilter, noiseBuf, muted = false;
@@ -288,7 +403,7 @@ const tieSound = () => chord([440,440], 'square', .12, .05, .14);
 const victorySound = () => chord([392,523,659,784,1047,1319], 'triangle', 1.6, .13, .11);
 
 $('mute').addEventListener('click', () => {
-  muted = !muted; $('mute').textContent = muted ? '소리 꺼짐' : '소리 켜짐';
+  muted = !muted; $('mute').textContent = tr(muted ? 'mute.off' : 'mute.on');
   if (AC) master.gain.setTargetAtTime(muted?0:.8, AC.currentTime, .05);
 });
 
@@ -553,12 +668,12 @@ function renderRound(){
   const r = $('round'), l = $('roundLabel');
   r.classList.remove('atk','hot');
   if (mode!=='rps' && attacker){
-    l.textContent = attacker==='you' ? '당신의 공격' : N.name + '의 공격';
+    l.textContent = attacker==='you' ? tr('atkYou') : tr('atkFoe', N.friend);
     r.classList.add(attacker==='foe' ? 'hot' : 'atk');
   }
-  else if (score.you===2 && score.foe===2){ l.textContent = '데스매치'; r.classList.add('hot'); }
-  else if (matchPoint()){ l.textContent = score.you===2 ? '당신의 매치 포인트' : '벼랑 끝'; r.classList.add('hot'); }
-  else l.textContent = `제 ${round} 라운드`;
+  else if (score.you===2 && score.foe===2){ l.textContent = tr('sudden'); r.classList.add('hot'); }
+  else if (matchPoint()){ l.textContent = tr(score.you===2 ? 'mpYou' : 'mpFoe'); r.classList.add('hot'); }
+  else l.textContent = tr('round', round);
 }
 
 function predict(list, keys){
@@ -609,23 +724,21 @@ function beginChoose(){
   if (mode==='cham'){
     you.target = attacker==='you' ? 'point' : 'rock';
     foe.target = attacker==='foe' ? 'point' : 'rock';
-    const verb = attacker==='you' ? '가리키기' : '보기';
-    $('c-L').querySelector('.l').textContent = '왼쪽 ' + verb;
-    $('c-R').querySelector('.l').textContent = '오른쪽 ' + verb;
+    ['L','R'].forEach(d => { $('c-'+d).querySelector('.l').textContent = tr('chamBtn', attacker==='you', d); });
   } else { you.target = 'rock'; foe.target = 'rock'; }
   document.querySelectorAll('.choice').forEach(b => { b.classList.remove('picked'); b.disabled = false; });
   dock.classList.remove('off'); $('timer').classList.remove('late');
   renderRound();
-  let s = '손을 골라라', sc = aiRead ? 'var(--foe)' : 'var(--ink)';
-  if (aiRead) s = '검은 장갑이 당신의 습관을 읽고 있다…';
-  else if (score.you===2 && score.foe===2) s = '이번 한 판으로 모든 게 끝난다';
-  else if (score.foe===2) s = '지면 끝이다';
-  else if (score.you===2) s = '한 번만 더 이기면 끝';
-  else if (ties > 0) s = `무승부 ×${ties} · 다시`;
-  if (mode==='mjp' && attacker==='you'){ s = '같은 손을 내면 잡는다!' + (aiRead ? ' · 상대가 읽고 있다' : ''); sc = 'var(--you)'; }
-  if (mode==='mjp' && attacker==='foe'){ s = '같은 손이면 잡힌다. 피해라!' + (aiRead ? ' · 읽히고 있다' : ''); sc = 'var(--foe)'; }
-  if (mode==='cham' && attacker==='you'){ s = N.i + ' 고개를 돌릴 쪽을 가리켜라' + (aiRead ? ' · 상대가 읽고 있다' : ''); sc = 'var(--you)'; }
-  if (mode==='cham' && attacker==='foe'){ s = '손가락과 다른 쪽으로 고개를 돌려라!' + (aiRead ? ' · 읽히고 있다' : ''); sc = 'var(--foe)'; }
+  let s = tr('sPick'), sc = aiRead ? 'var(--foe)' : 'var(--ink)';
+  if (aiRead) s = tr('sRead');
+  else if (score.you===2 && score.foe===2) s = tr('sFinal');
+  else if (score.foe===2) s = tr('sEdge');
+  else if (score.you===2) s = tr('sOneMore');
+  else if (ties > 0) s = tr('sDraws', ties);
+  if (mode==='mjp' && attacker==='you'){ s = tr('sMjpAtk', aiRead); sc = 'var(--you)'; }
+  if (mode==='mjp' && attacker==='foe'){ s = tr('sMjpDef', aiRead); sc = 'var(--foe)'; }
+  if (mode==='cham' && attacker==='you'){ s = tr('sChamAtk', N.friend, aiRead); sc = 'var(--you)'; }
+  if (mode==='cham' && attacker==='foe'){ s = tr('sChamDef', aiRead); sc = 'var(--foe)'; }
   say('', null, s, sc);
   hbTimer = 0; feintT = .6 + Math.random()*.6; feintBack = 0;
 }
@@ -639,7 +752,7 @@ function pick(move, auto){
   if (mode==='cham'){ foe.yaw = 0; headYawT = 0; } else foe.target = 'rock';
   if (online){
     send({t:'pick', mid, seq, move});
-    if (oppPicks[seq] === undefined){ phase = 'wait'; say('', null, timedOut ? '시간 초과! 멋대로 나갔다 · 친구를 기다리는 중…' : '친구를 기다리는 중…', 'var(--muted)'); return; }
+    if (oppPicks[seq] === undefined){ phase = 'wait'; say('', null, tr('wait', timedOut), 'var(--muted)'); return; }
     aiMove = oppPicks[seq];
   }
   beginChant();
@@ -648,7 +761,7 @@ function beginChant(){
   phase = 'chant'; phaseT = 0; chantBeat = 0; beatLen = matchPoint() ? .36 : .42;
   if (mode==='mjp' && attacker) beatLen = matchPoint() ? .27 : .31;
   if (mode==='cham') beatLen = matchPoint() ? .32 : .38;
-  say('', null, timedOut ? '시간 초과! 멋대로 나간다' : '', timedOut ? 'var(--foe)' : null);
+  say('', null, timedOut ? tr('timeout') : '', timedOut ? 'var(--foe)' : null);
 }
 function onOppPick(msg){
   if (msg.mid !== mid) return;
@@ -656,9 +769,9 @@ function onOppPick(msg){
   if (phase==='wait' && msg.seq===seq){ aiMove = msg.move; beginChant(); }
 }
 function onBeat(n){
-  let words = ['가위!','바위!','보!'];
-  if (mode==='mjp' && attacker) words = ['묵!','찌!','빠!'];
-  if (mode==='cham') words = ['참!','참!','참!'];
+  let words = tr('wRps');
+  if (mode==='mjp' && attacker) words = tr('wMjp');
+  if (mode==='cham') words = tr('wCham');
   const col = n===3 ? 'var(--gold)' : (mode!=='rps' && attacker ? (attacker==='you' ? 'var(--you)' : 'var(--foe)') : 'var(--ink)');
   say(words[n-1], col);
   beatHit(); shake = Math.max(shake, .06 + n*.02);
@@ -687,8 +800,8 @@ function doImpact(){
   if (mode==='cham'){
     const at = attacker==='you' ? [0,.6,-1.3] : [camTurn*.8,.7,2.6];
     impactGlow.position.set(...at);
-    if (kind==='point'){ say('걸렸다!', 'var(--gold)'); burst(col, at[0], at[1], at[2], 6); }
-    else { flashAmt = .5; shake = .2; say('휙!', 'var(--ink)'); burst(0xf3c969, at[0], at[1], at[2], 2.5); }
+    if (kind==='point'){ say(tr('impCaught'), 'var(--gold)'); burst(col, at[0], at[1], at[2], 6); }
+    else { flashAmt = .5; shake = .2; say(tr('impWhoosh'), 'var(--ink)'); burst(0xf3c969, at[0], at[1], at[2], 2.5); }
     return;
   }
   impactGlow.position.set(0, BASE_Y, 0);
@@ -708,34 +821,34 @@ function showResult(){
   if (mode==='cham'){
     if (kind==='point'){
       const w = outcome==='win' ? 'you' : 'foe'; score[w]++; renderPips(w);
-      if (w==='you'){ winSound(); say('잡았다!', 'var(--you)', `${N.i} ${DIRKO[aiMove]}을 봤다 · 1점`, 'var(--ink)'); }
-      else { loseSound(); say('걸렸다', 'var(--foe)', `손가락을 따라 ${DIRKO[playerMove]}을 봤다` + (aiRead ? ' · 읽혔다' : ''), 'var(--ink)'); }
-    } else if (attacker==='you'){ chord([311,233], 'sawtooth', .4, .08, .06); say('빗나감', 'var(--muted)', `${N.eun} ${DIRKO[aiMove]}을 봤다 · 공수 교대`, 'var(--ink)'); }
-    else { chord([523,784], 'triangle', .35, .12, .06); say('피했다!', 'var(--you)', `손가락은 ${DIRKO[aiMove]} · 이제 당신이 공격`, 'var(--ink)'); }
+      if (w==='you'){ winSound(); say(tr('gotThem'), 'var(--you)', tr('chamGotSub', N.friend, tr('dirs')[aiMove]), 'var(--ink)'); }
+      else { loseSound(); say(tr('caught'), 'var(--foe)', tr('chamCaughtSub', tr('dirs')[playerMove], aiRead), 'var(--ink)'); }
+    } else if (attacker==='you'){ chord([311,233], 'sawtooth', .4, .08, .06); say(tr('missed'), 'var(--muted)', tr('chamMissSub', N.friend, tr('dirs')[aiMove]), 'var(--ink)'); }
+    else { chord([523,784], 'triangle', .35, .12, .06); say(tr('dodged'), 'var(--you)', tr('chamDodgeSub', tr('dirs')[aiMove]), 'var(--ink)'); }
     attacker = attacker==='you' ? 'foe' : 'you';
     renderRound(); drone(.03, 200); return;
   }
   if (kind==='tie'){
     ties++; tieSound();
-    say('무승부', 'var(--gold)', `둘 다 ${nm(playerMove)}`, 'var(--ink)');
+    say(tr('draw'), 'var(--gold)', tr('both', nm(playerMove)), 'var(--ink)');
   } else if (kind==='attack'){
     ties = 0;
     const swap = attacker && attacker !== (outcome==='win' ? 'you' : 'foe');
     attacker = outcome==='win' ? 'you' : 'foe';
-    if (attacker==='you'){ chord([523,784], 'triangle', .35, .12, .06); say(swap ? '공격 뺏기!' : '공격권!', 'var(--you)', `${nm(playerMove)}(이)가 ${nm(aiMove)}를 이겼다 · 이제 당신이 공격`, 'var(--ink)'); }
-    else { chord([311,233], 'sawtooth', .4, .08, .06); say(swap ? '공격 뺏김!' : '수비!', 'var(--foe)', `${nm(aiMove)}(이)가 ${nm(playerMove)}를 이겼다 · 같은 손을 피해라`, 'var(--ink)'); }
+    if (attacker==='you'){ chord([523,784], 'triangle', .35, .12, .06); say(tr(swap ? 'stolen' : 'attack'), 'var(--you)', tr('mjpAtkSub', nm(playerMove), nm(aiMove)), 'var(--ink)'); }
+    else { chord([311,233], 'sawtooth', .4, .08, .06); say(tr(swap ? 'lostIt' : 'defend'), 'var(--foe)', tr('mjpDefSub', nm(aiMove), nm(playerMove)), 'var(--ink)'); }
     renderRound();
   } else if (mode==='mjp'){
     ties = 0;
     const w = outcome==='win' ? 'you' : 'foe'; score[w]++; renderPips(w); attacker = null;
-    if (w==='you'){ winSound(); say('잡았다!', 'var(--you)', `둘 다 ${nm(playerMove)} · 1점`, 'var(--ink)'); }
-    else { loseSound(); say('잡혔다', 'var(--foe)', `둘 다 ${nm(playerMove)}` + (aiRead ? ' · 읽혔다' : ''), 'var(--ink)'); }
+    if (w==='you'){ winSound(); say(tr('gotThem'), 'var(--you)', tr('mjpGotSub', nm(playerMove)), 'var(--ink)'); }
+    else { loseSound(); say(tr('caughtMjp'), 'var(--foe)', tr('both', nm(playerMove)) + (aiRead ? tr('readTag') : ''), 'var(--ink)'); }
   } else {
     ties = 0;
     const w = outcome==='win' ? 'you' : 'foe'; score[w]++; renderPips(w);
     const winMove = outcome==='win' ? playerMove : aiMove;
-    if (outcome==='win'){ winSound(); say('승리', 'var(--you)', WHY[winMove], 'var(--ink)'); }
-    else { loseSound(); say('패배', 'var(--foe)', WHY[winMove] + (aiRead ? ' · 읽혔다' : ''), 'var(--ink)'); }
+    if (outcome==='win'){ winSound(); say(tr('win'), 'var(--you)', tr('why')[winMove], 'var(--ink)'); }
+    else { loseSound(); say(tr('loss'), 'var(--foe)', tr('why')[winMove] + (aiRead ? tr('readTag') : ''), 'var(--ink)'); }
   }
   drone(.03, 200);
 }
@@ -743,17 +856,17 @@ function endMatch(){
   phase = 'end'; phaseT = 0;
   const won = score.you > score.foe;
   say('', null, '');
-  $('endEyebrow').textContent = won ? N.eul + ' 꺾었다' : N.name + '의 승리';
-  const t = $('endTitle'); t.textContent = won ? '최종 승리' : '패배'; t.style.color = won ? 'var(--you)' : 'var(--foe)';
+  $('endEyebrow').textContent = won ? tr('endWon', N.friend) : tr('endLost', N.friend);
+  const t = $('endTitle'); t.textContent = tr(won ? 'finalWin' : 'defeat'); t.style.color = won ? 'var(--you)' : 'var(--foe)';
   $('endScore').textContent = `${score.you} : ${score.foe}`;
   $('endRounds').textContent = round;
   const list = mode==='cham' ? chamHist : history, keys = mode==='cham' ? ['L','R'] : MOVES;
   const c = {}; keys.forEach(k => c[k] = 0); list.forEach(m => c[m]++);
   const fav = keys.slice().sort((a,b) => c[b]-c[a])[0];
-  $('endFavLabel').textContent = mode==='cham' ? '가장 많이 고른 쪽' : '가장 많이 낸 손';
-  $('endFav').textContent = `${nm(fav)} ${c[fav]}회`;
-  $('endReads').textContent = online ? '-' : `${reads}회`;
-  $('endLine').textContent = online ? (won ? '친구에게 한 번 더 하자고 해 보세요.' : '복수전을 신청하세요.') : won ? '심장이 아직 뛰고 있다면, 한 번 더.' : `${nm(fav)}를 너무 많이 골랐어요. 상대는 그걸 보고 있었습니다.`;
+  $('endFavLabel').textContent = tr(mode==='cham' ? 'favSide' : 'favHand');
+  $('endFav').textContent = tr('favCount', nm(fav), c[fav]);
+  $('endReads').textContent = online ? '-' : tr('reads', reads);
+  $('endLine').textContent = online ? tr(won ? 'lineOnWin' : 'lineOnLose') : won ? tr('lineWin') : tr('lineLose', nm(fav));
   $('end').hidden = false;
   if (won){ victorySound(); burst(0xf3c969, 0, 1.5, 0, 8); } else loseSound();
   drone(.04, 180);
@@ -775,22 +888,23 @@ $('startCham').addEventListener('click', () => { initAudio(); startMatch('cham')
 $('againBtn').addEventListener('click', () => {
   initAudio();
   if (!online){ startMatch(); return; }
-  if (!conn || !conn.open){ $('end').hidden = true; showOnline(); setStatus('친구와 연결이 끊겼어요.', 'bad'); return; }
+  if (!conn || !conn.open){ $('end').hidden = true; showOnline(); setStatus('stLost', 'bad'); return; }
   againMe = true; send({t:'again'});
-  $('endLine').textContent = againFriend ? '곧 시작해요!' : '친구가 다시 결전을 누르길 기다리는 중…';
+  $('endLine').textContent = tr(againFriend ? 'againSoon' : 'againWait');
   tryRematch();
 });
 $('homeBtn').addEventListener('click', () => {
   if (online){ $('end').hidden = true; showOnline(); return; }
   $('end').hidden = true; $('title').hidden = false; phase = 'title'; attacker = null;
-  score = {you:0, foe:0}; renderPips(); $('roundLabel').textContent = '대기 중'; $('round').classList.remove('hot','atk');
+  score = {you:0, foe:0}; renderPips(); $('roundLabel').textContent = tr('hud.standby'); $('round').classList.remove('hot','atk');
 });
 
 /* ---------------- Online ---------------- */
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const peerId = code => 'rspduel-v1-' + code;
 const pageUrl = () => location.href.split('?')[0].split('#')[0];
-function setStatus(text, cls){ const el = $('onStatus'); el.textContent = text; el.className = 'status' + (cls ? ' ' + cls : ''); }
+let lastStatus = null;
+function setStatus(key, cls, ...a){ lastStatus = [key, cls, ...a]; const el = $('onStatus'); el.textContent = tr(key, ...a); el.className = 'status' + (cls ? ' ' + cls : ''); }
 function send(msg){ if (conn && conn.open) conn.send(msg); }
 function showOnline(){
   $('title').hidden = true; $('end').hidden = true; $('online').hidden = false;
@@ -798,7 +912,7 @@ function showOnline(){
   const linked = conn && conn.open;
   $('onSetup').hidden = !!linked || !!peer;
   $('onModes').hidden = !(linked && isHost);
-  if (linked) setStatus(isHost ? '친구와 연결됐어요! 모드를 골라 시작하세요.' : '친구와 연결됐어요! 친구가 모드를 고르는 중…', 'ok');
+  if (linked) setStatus(isHost ? 'stHost' : 'stGuest', 'ok');
 }
 function leaveOnline(){
   const c = conn; conn = null;
@@ -807,17 +921,17 @@ function leaveOnline(){
   peer = null; online = false; isHost = false;
   setRival(false);
   $('online').hidden = true; $('codeBox').hidden = true; $('onModes').hidden = true; $('onSetup').hidden = false;
-  setStatus('방을 만들거나, 친구에게 받은 코드로 참가하세요.');
+  setStatus('stDefault');
   $('title').hidden = false; phase = 'title'; attacker = null; score = {you:0, foe:0}; renderPips();
-  $('roundLabel').textContent = '대기 중'; $('round').classList.remove('hot','atk'); dock.classList.add('off'); say('', null, '');
+  $('roundLabel').textContent = tr('hud.standby'); $('round').classList.remove('hot','atk'); dock.classList.add('off'); say('', null, '');
 }
 function peerError(e){
   const t = e && e.type;
   if (t === 'unavailable-id' && isHost){ makeRoom(); return; }
-  if (t === 'peer-unavailable') setStatus('그 코드의 방을 찾을 수 없어요. 코드를 다시 확인하세요.', 'bad');
+  if (t === 'peer-unavailable') setStatus('stNoRoom', 'bad');
   else if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'browser-incompatible')
-    setStatus('연결 서버에 닿지 못했어요. 온라인 대전은 https://leewonyoungethan.github.io/RSP/ 에서 열어 주세요.', 'bad');
-  else setStatus('연결 중 문제가 생겼어요. 다시 시도해 주세요.', 'bad');
+    setStatus('stNoServer', 'bad');
+  else setStatus('stError', 'bad');
   try { if (peer) peer.destroy(); } catch(_){}
   peer = null; $('onSetup').hidden = false; $('codeBox').hidden = true;
 }
@@ -830,7 +944,7 @@ function wire(c){
     if (msg.t === 'pick') onOppPick(msg);
     if (msg.t === 'again'){
       againFriend = true;
-      if (!$('end').hidden) $('endLine').textContent = againMe ? '곧 시작해요!' : '친구가 한 판 더 하자고 해요!';
+      if (!$('end').hidden) $('endLine').textContent = tr(againMe ? 'againSoon' : 'againFriend');
       tryRematch();
     }
   });
@@ -840,7 +954,7 @@ function wire(c){
     try { if (peer) peer.destroy(); } catch(e){}
     peer = null;
     showOnline(); $('onModes').hidden = true; $('codeBox').hidden = true; $('onSetup').hidden = false;
-    setStatus('친구와 연결이 끊겼어요. 방을 다시 만들거나 참가하세요.', 'bad');
+    setStatus('stDisc', 'bad');
   });
 }
 function hostStart(m){
@@ -849,14 +963,14 @@ function hostStart(m){
 }
 function tryRematch(){ if (againMe && againFriend && isHost) hostStart(mode); }
 function makeRoom(){
-  if (typeof Peer === 'undefined'){ setStatus('온라인 기능을 불러오지 못했어요. 인터넷 연결을 확인하세요.', 'bad'); return; }
+  if (typeof Peer === 'undefined'){ setStatus('stNoLib', 'bad'); return; }
   try { if (peer) peer.destroy(); } catch(e){}
   let code = ''; for (let i=0;i<4;i++) code += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];
-  isHost = true; setStatus('방을 만드는 중…'); $('onSetup').hidden = true;
+  isHost = true; setStatus('stCreating'); $('onSetup').hidden = true;
   peer = new Peer(peerId(code));
   peer.on('open', () => {
     $('roomCode').textContent = code; $('roomLink').textContent = pageUrl() + '?room=' + code; $('codeBox').hidden = false;
-    setStatus('친구에게 코드나 링크를 보내 주세요. 친구가 들어오면 시작할 수 있어요.');
+    setStatus('stShare');
   });
   peer.on('connection', c => {
     if (conn && conn.open){ c.on('open', () => c.close()); return; }
@@ -866,10 +980,10 @@ function makeRoom(){
 }
 function joinRoom(code){
   code = (code || '').trim().toUpperCase();
-  if (code.length !== 4){ setStatus('코드 4자리를 입력하세요.', 'bad'); return; }
-  if (typeof Peer === 'undefined'){ setStatus('온라인 기능을 불러오지 못했어요. 인터넷 연결을 확인하세요.', 'bad'); return; }
+  if (code.length !== 4){ setStatus('stCode4', 'bad'); return; }
+  if (typeof Peer === 'undefined'){ setStatus('stNoLib', 'bad'); return; }
   try { if (peer) peer.destroy(); } catch(e){}
-  isHost = false; setStatus(`${code} 방에 들어가는 중…`); $('onSetup').hidden = true;
+  isHost = false; setStatus('stJoining', '', code); $('onSetup').hidden = true;
   peer = new Peer();
   peer.on('open', () => wire(peer.connect(peerId(code), {reliable:true})));
   peer.on('error', peerError);
@@ -881,13 +995,37 @@ $('joinCode').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom
 $('onBack').addEventListener('click', leaveOnline);
 $('copyLink').addEventListener('click', () => {
   const text = $('roomLink').textContent;
-  const done = () => { $('copyLink').textContent = '복사했어요'; setTimeout(() => { $('copyLink').textContent = '초대 링크 복사'; }, 1500); };
+  const done = () => { $('copyLink').textContent = tr('on.copied'); setTimeout(() => { $('copyLink').textContent = tr('on.copy'); }, 1500); };
   const fallback = () => { const r = document.createRange(); r.selectNodeContents($('roomLink')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); };
   try { navigator.clipboard.writeText(text).then(done, fallback); } catch(e){ fallback(); }
 });
 document.querySelectorAll('#onModes [data-mode]').forEach(b => b.addEventListener('click', () => hostStart(b.dataset.mode)));
 const roomParam = (new URLSearchParams(location.search).get('room') || '').toUpperCase();
 if (roomParam){ showOnline(); $('joinCode').value = roomParam; joinRoom(roomParam); }
+
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.title = tr('doc.title');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = tr(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = tr(el.dataset.i18nHtml); });
+  $('joinCode').placeholder = tr('on.code'); $('joinCode').setAttribute('aria-label', tr('on.codeAria'));
+  $('mute').textContent = tr(muted ? 'mute.off' : 'mute.on');
+  $('langBtn').textContent = tr('lang.other');
+  document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+  $('foeName').textContent = tr(N.friend ? 'friend' : 'rival');
+  MOVES.forEach(mv => { $('c-'+mv).querySelector('.l').textContent = nm(mv); });
+  ['L','R'].forEach(d => { $('c-'+d).querySelector('.l').textContent = tr('chamBtn', attacker!=='foe', d); });
+  if (phase === 'title') $('roundLabel').textContent = tr('hud.standby'); else renderRound();
+  if (lastStatus) setStatus(...lastStatus);
+}
+function setLang(l){
+  lang = l;
+  try { localStorage.setItem('rsp-lang', l); } catch(e){}
+  applyLang();
+}
+$('langBtn').addEventListener('click', () => setLang(lang === 'ko' ? 'en' : 'ko'));
+document.querySelectorAll('.langs button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+applyLang();
 
 /* ---------------- Loop ---------------- */
 const lerp = (a,b,t) => a+(b-a)*t;

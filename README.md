@@ -4,7 +4,7 @@
 
 **바로 하기:** https://leewonyoungethan.github.io/RSP/
 
-**English:** https://leewonyoungethan.github.io/RSP/en.html
+**English:** 게임 안의 언어 버튼(한국어 / English)으로 바꿀 수 있어요. 바로 영어로 열기: https://leewonyoungethan.github.io/RSP/?lang=en
 
 - 3선승제, 제한 시간, 심장 소리, 슬로모션 공개
 - 컴퓨터 상대 '검은 장갑'은 내가 자주 내는 손을 읽어요
